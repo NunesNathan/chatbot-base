@@ -1,4 +1,5 @@
 "use client";
+import { IChat } from "@/services/chatBotService";
 import React, { createContext, useState } from "react";
 
 interface IChatContextProps {
@@ -6,6 +7,8 @@ interface IChatContextProps {
   setUser: React.Dispatch<React.SetStateAction<IUserInfo>>;
   token?: string;
   setToken: React.Dispatch<React.SetStateAction<string | undefined>>;
+  messages: IChat[];
+  setMessages: React.Dispatch<React.SetStateAction<IChat[]>>;
 }
 
 export interface ISignInData {
@@ -24,9 +27,12 @@ export const ChatbotContext = createContext({} as IChatContextProps);
 export function ChatbotProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<IUserInfo>({} as IUserInfo);
   const [token, setToken] = useState<string>();
+  const [messages, setMessages] = useState<IChat[]>([]);
 
   return (
-    <ChatbotContext.Provider value={{ user, setUser, token, setToken }}>
+    <ChatbotContext.Provider
+      value={{ user, setUser, token, setToken, messages, setMessages }}
+    >
       {children}
     </ChatbotContext.Provider>
   );
