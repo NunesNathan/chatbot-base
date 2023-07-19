@@ -43,15 +43,29 @@ export class ChatBot {
     return messages;
   }
 
-  public static async GetCSV(id: string): Promise<Response | undefined> {
-    const data = await fetch(`api/chat/csv/?id=${id}`, {
+  public static async GetCSV(id: string): Promise<string | undefined> {
+    const data = await (await fetch(`api/chat/?id=${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    })).json();
 
-    return data;
+    const getted = await data.chats as IChat[];
+    const a = getted.find(({ finishedAt }) => finishedAt !== null) as IChat;
+    const date = new Date(a.finishedAt as Date).toLocaleDateString('en-US')
+    const mapped = [] as string[];
+    getted.forEach(({ createdAt, text, response }) => {
+      mapped.push(`${createdAt};${text.replaceAll(/ |\n/g, '')};${response.replaceAll(/ |\n/g, '')};\n`)
+    })
+
+    console.log(mapped)
+
+    return `List separator=;
+      Chat finished on ${await date};
+      created at;text;response;
+      ${mapped.join("")}
+    `;
   }
 
   public static GenerateResponse(inputValue: string) {

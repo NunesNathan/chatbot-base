@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 export default function Chat() {
   const { messages, user, setMessages } = useContext(ChatbotContext);
   const [inputValue, setInputValue] = useState("");
+  const [enableToCopy, setEnableToCopy] = useState(false);
   const [responseOptions, setLinkOptions] = useState<
     {
       option: string;
@@ -55,8 +56,10 @@ export default function Chat() {
         messages.pop();
       }
       if (response[0] === "See you, name!") {
+        saved.finishedAt = new Date();
+        console.log(saved);
         setMessages([...messages, saved]);
-        ///csv
+        hasFinished();
       }
       if (response[1]?.length > 0) {
         setLinkOptions(
@@ -70,11 +73,30 @@ export default function Chat() {
     }
   };
 
+  const hasFinished = () => {
+    if (messages.some(({ finishedAt }) => !!finishedAt)) {
+      setEnableToCopy(true);
+      console.log("asdasdasdasd");
+    } else {
+      setEnableToCopy(false);
+    }
+  };
+
+  const getCSV = async () => {
+    const csv = (await ChatBot.GetCSV(user.id)) as string;
+    return navigator.clipboard.writeText(await csv);
+  };
+
   return (
     <main className="flex min-h-screen items-center justify-center">
       <Card className="w-[440px] h-[590px] grid grid-rows-[min-content_1fr_min-content]">
-        <CardHeader>
+        <CardHeader className="flex-row justify-between">
           <CardTitle>Loan chatbot</CardTitle>
+          <CardContent>
+            <Button disabled={!enableToCopy} onClick={getCSV}>
+              CSV
+            </Button>
+          </CardContent>
         </CardHeader>
 
         <CardContent className="overflow-y-auto space-y-3">
