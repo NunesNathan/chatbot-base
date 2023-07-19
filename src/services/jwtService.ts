@@ -9,10 +9,10 @@ const signOptions = {
 
 export default class Token {
   public static create(data: IUserInfo): string {
-    return jwt.sign(data, process.env.JWT_SECRET, signOptions);
+    return jwt.sign(data, process.env.JWT_SECRET as jwt.Secret, signOptions);
   }
 
   public static check(token: string): IUserInfo {
-    return jwt.verify(token, process.env.JWT_SECRET) as unknown as IUserInfo;
+    return jwt.verify(token, process.env.JWT_SECRET as jwt.Secret) as IUserInfo;
   }
 }

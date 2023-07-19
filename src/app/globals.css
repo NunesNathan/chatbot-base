@@ -76,3 +76,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+body {
+  background-color: #1A1B1C;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-width: 100vw;
+}

@@ -8,21 +8,25 @@ import { FieldValues, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 
-export default function Login() {
-  const [loginError, setLoginError] = useState("");
+export default function SignUp() {
+  const [signUpError, setSignUpError] = useState("");
   const { register, handleSubmit } = useForm();
   const router = useRouter();
   const { setToken, setUser } = useContext(ChatbotContext);
 
   const onSubmit = async (e: FieldValues) => {
-    const response = await Sign.Login(e as ISignInData);
-    if (response?.status && response?.status > 300) {
-      setLoginError((await response?.json()).error);
+    if (e.confirmPassword !== e.password) {
+      setSignUpError("Passwords do not match");
     } else {
-      const { user, token } = await response?.json();
-      await setUser(user);
-      await setToken(token);
-      router.push("/chatbot");
+      const response = await Sign.SignUp(e as ISignInData);
+      if (response?.status && response?.status > 300) {
+        setSignUpError((await response?.json()).error);
+      } else {
+        const { user, token } = await response?.json();
+        await setUser(user);
+        await setToken(token);
+        router.push("/chatbot");
+      }
     }
   };
 
@@ -46,21 +50,29 @@ export default function Login() {
           type="password"
           placeholder="**********"
         />
+        <Input
+          required
+          {...register("confirmPassword")}
+          type="password"
+          placeholder="**********"
+        />
         <Button
           type="submit"
           className="w-full text-black bg-white hover:text-[#E62415] hover:bg-[#65eaa6]"
         >
-          Log in!
+          Sign up!
         </Button>
         <Button
           type="button"
-          onClick={() => router.push("/signup")}
+          onClick={() => router.push("/")}
           className="w-full text-[#E62415] bg-black hover:text-[#65eaa6] hover:bg-[#E62415]"
         >
-          {"Sign up =>"}
+          {"Log in =>"}
         </Button>
-        {loginError && (
-          <span className="leading-8 text-red-600 font-bold">{loginError}</span>
+        {signUpError && (
+          <span className="leading-8 text-red-600 font-bold">
+            {signUpError}
+          </span>
         )}
       </form>
     </main>
